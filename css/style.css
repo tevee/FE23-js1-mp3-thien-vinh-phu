@@ -1,0 +1,35 @@
+body {
+    font-family: Georgia, serif;
+}
+
+ul {
+    padding: 0;
+}
+
+li {
+    margin-bottom: 0.25rem;
+}
+
+#containerDiv {
+    margin-top: 2rem;
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.countryCard {
+    border: 1px solid black;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.countryCard > img {
+    border-top: 1px solid black;
+    flex-grow: 1;
+    width: 100%;
+}
+
+li {
+    list-style-type: none;
+}
