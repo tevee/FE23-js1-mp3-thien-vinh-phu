@@ -7,20 +7,26 @@ formEl.addEventListener("submit", (e) => {
   const input = document.querySelector("#search").value;
   const radioNameEl = document.querySelector("#name");
   const radioLangEl = document.querySelector("#language");
+  const radioArr = [];
 
-  if (radioNameEl.checked && input !== "") {
-    getCountry(fetchCountryByName, input);
-  } else if (radioLangEl.checked && input !== "") {
-    getCountry(fetchCountryByLanguage, input);
-  } else {
-    displayEmptyInputMessage();
+  if(radioNameEl.checked){
+    radioArr.push(radioNameEl.value)
+  } else if(radioLangEl.checked) {
+    radioArr.push(radioLangEl.value)
   }
-  // fetchCountry(type, text).then(displayCountries);
+
+  fetchCountry(radioArr[0], input)
+  .then(displayCountries)
+  .catch(error =>{
+    displayErrorMessage(error, input)
+  })
+
   formEl.reset();
 });
 
-async function fetchCountryByName(name) {
-  const url = `https://restcountries.com/v3.1/name/${name}?fields=name,subregion,capital,population,flags`;
+async function fetchCountry(property, input){
+  
+  const url = `https://restcountries.com/v3.1/${property}/${input}?fields=name,subregion,capital,population,flags`;
 
   const response = await fetch(url);
   const data = await response.json();
@@ -34,36 +40,7 @@ async function fetchCountryByName(name) {
   }
 }
 
-async function fetchCountryByLanguage(language) {
-  const url = `https://restcountries.com/v3.1/lang/${language}?fields=name,subregion,capital,population,flags`;
-
-  const response = await fetch(url);
-  const data = await response.json();
-
-  if (response.status >= 200 && response.status < 300) {
-    return data;
-  } else if (response.status === 404) {
-    throw 404;
-  } else {
-    throw Error("Unexpected error when fetching countries by language");
-  }
-}
-
-// callback function för async fetch
-// input för inputet användaren har matat in
-function getCountry(callback, input) {
-  callback(input)
-    .then((arr) => {
-      displayCountry(arr);
-    })
-    .catch((error) => {
-      displayError(error, input);
-    });
-}
-
-// Skickar array som parameter för att loopa igenom alla country objekt
-// Största anledningen är för att visa flera länder i DOM:en och rensa senaste sökning
-function displayCountry(countryArr) {
+function displayCountries(countryArr) {
   containerDiv.innerHTML = "";
 
   // Jämför elementen
@@ -72,19 +49,6 @@ function displayCountry(countryArr) {
   countryArr.sort((firstCountryObj, secondCountryObj) => {
     return secondCountryObj.population - firstCountryObj.population;
   });
-
-  // Bubble sort algorithm - smidigare att använda sort metoden
-
-  // for (let i = 0; i < countryArr.length; i++) {
-  //   console.log(countryArr);
-  //   for (let j = 0; j < countryArr.length - 1; j += 1) {
-  //     if (countryArr[j + 1].population > countryArr[j].population) {
-  //       let temp = countryArr[j].population;
-  //       countryArr[j].population = countryArr[j + 1].population;
-  //       countryArr[j + 1].population = temp;
-  //     }
-  //   }
-  // }
 
   for (const country in countryArr) {
     const countryCard = document.createElement("div");
@@ -115,23 +79,15 @@ function displayCountry(countryArr) {
   }
 }
 
-function displayEmptyInputMessage() {
-  const h2El = document.createElement("h2");
-  containerDiv.innerHTML = "";
-
-  h2El.innerHTML =
-    "You forgot to type in the input field and check either name or language :(";
-  containerDiv.append(h2El);
-}
-
-function displayError(error, input) {
+function displayErrorMessage(error, input) {
   console.log(error);
   const h2El = document.createElement("h2");
   containerDiv.innerHTML = "";
 
   if (error === 404) {
     h2El.innerText = `${input} could not be found, please try another country or language!`;
-  } else {
+  } 
+  else {
     h2El.innerText = `Unexpected error, try again later`;
   }
 
