@@ -5,17 +5,9 @@ formEl.addEventListener("submit", (e) => {
   e.preventDefault();
 
   const input = document.querySelector("#search").value;
-  const radioNameEl = document.querySelector("#name");
-  const radioLangEl = document.querySelector("#language");
-  const radioArr = [];
+  const radioElValue = document.querySelector('input[type=radio]:checked').value
 
-  if(radioNameEl.checked){
-    radioArr.push(radioNameEl.value)
-  } else if(radioLangEl.checked) {
-    radioArr.push(radioLangEl.value)
-  }
-
-  fetchCountry(radioArr[0], input)
+  fetchCountries(radioElValue, input)
   .then(displayCountries)
   .catch(error =>{
     displayErrorMessage(error, input)
@@ -24,7 +16,7 @@ formEl.addEventListener("submit", (e) => {
   formEl.reset();
 });
 
-async function fetchCountry(property, input){
+async function fetchCountries(property, input){
   
   const url = `https://restcountries.com/v3.1/${property}/${input}?fields=name,subregion,capital,population,flags`;
 
@@ -44,8 +36,8 @@ function displayCountries(countryArr) {
   containerDiv.innerHTML = "";
 
   // Jämför elementen
-  // Om det returneras ett positivt värde - första elementet får högre index
-  // Om det returneras ett negativt värde - första elementet får mindre index
+  // Om det returneras ett positivt värde - elementet får högre index
+  // Om det returneras ett negativt värde - elementet får mindre index
   countryArr.sort((firstCountryObj, secondCountryObj) => {
     return secondCountryObj.population - firstCountryObj.population;
   });
